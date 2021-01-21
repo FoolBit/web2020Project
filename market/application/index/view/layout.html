@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>预订抢购系统</title>
+    <link rel="shortcut icon" href="__STATIC__/images/logo_white_bg.svg" />
+    <link rel="stylesheet" type="text/css" href="__STATIC__/css/element/index.css">
+    <link rel="stylesheet" type="text/css" href="__STATIC__/css/frame.css">
+    <script src="__STATIC__/js/vue.js"></script>
+    <script src="__STATIC__/js/element/index.js"></script>
+    <script src="https://cdn.staticfile.org/axios/0.18.0/axios.min.js"></script>
+    <script src="__STATIC__/js/http.js"></script>
+    {block name="topper"}{/block}
+</head>
+
+<body class="is-component">
+    <div id="app" class="is-component">
+        <div class="headerWrapper">
+            <header class="header">
+                <div class="container">
+                    <h1>
+                        <a href="" class="router-link-active">
+                            <img src="__STATIC__/images/logo_with_title.svg" alt="element-logo" class="nav-logo">
+                        </a>
+                    </h1>
+                    <ul class="nav">
+                        <li class="nav-item">
+                            <div class="nav-gap"></div>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{:url('index/index/home')}" class="{$active[0]}">主页
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{:url('index/index/good_list')}" class="{$active[1]}">预定
+                            </a>
+                        </li>
+                        <li class="nav-item nav-item-theme">
+                            <a href="{:url('index/index/info')}" class="{$active[2]}">个人信息
+                            </a>
+                        </li>
+                        <li class="nav-item nav-item-theme">
+                            <a href="{:url('index/index/logout')}" class="">
+                                当前用户:{{username}} 退出
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </header>
+        </div>
+        <div class="contentWrapper">
+            {block name="content"}{/block}
+        </div>
+    </div>
+    {block name="bottom"}
+    {/block}
+</body>
+
+<script>
+    function logOut(){
+        
+    }
+</script>
+
+</html>

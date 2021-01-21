@@ -1,0 +1,166 @@
+{extend name="layout" /}
+{block name="topper"}
+<link rel="stylesheet" type="text/css" href="__STATIC__/css/main/style.css">
+{/block}
+{block name="content"}
+<div class="main-content">
+    <div class="main-container">
+        <div class="content">
+            <el-divider content-position="left">
+                <div class="divider-title" style="font-size: 22px;">最近上新</div>
+            </el-divider>
+
+            <div class="good-list">
+                <div v-for="good in news" class="good-item">
+                    <div class="good-img-wrapper">
+                        <div class="good-img">
+                            <el-image :src="good.image" fit="cover" class="good-el-image">
+                            </el-image>
+                        </div>
+                    </div>
+                    <div class="good-title-wrapper">
+                        <span class="good-title">{{good.name}}</span>
+                    </div>
+                    <div class="good-detail-wrapper">
+                        <el-row>
+                            <el-col :span="13" class="good-price">
+                                <div> ￥{{good.price}}</div>
+                            </el-col>
+                            <el-col :span="10">
+                                <el-link class="good-link" :href="good.url" :underline="false" target="_blank">
+                                    <div>立即抢购</div>
+                                </el-link>
+                            </el-col>
+                        </el-row>
+                    </div>
+                </div>
+            </div>
+            <el-divider content-position="left">
+                <div class="divider-title" style="font-size: 22px;">推荐</div>
+            </el-divider>
+
+            <div class="good-list">
+                <div v-for="good in recommand" class="good-item">
+                    <div class="good-img-wrapper">
+                        <div class="good-img">
+                            <el-image :src="good.image" fit="cover" class="good-el-image">
+                            </el-image>
+                        </div>
+                    </div>
+                    <div class="good-title-wrapper">
+                        <span class="good-title">{{good.name}}</span>
+                    </div>
+                    <div class="good-detail-wrapper">
+                        <el-row>
+                            <el-col :span="13" class="good-price">
+                                <div> ￥{{good.price}}</div>
+                            </el-col>
+                            <el-col :span="10">
+                                <el-link class="good-link" :href="good.url" :underline="false" target="_blank">
+                                    <div>立即抢购</div>
+                                </el-link>
+                            </el-col>
+                        </el-row>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <div style="clear:both;"></div> -->
+</div>Î
+{/block}
+{block name="bottom"}
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            username: "",
+            recommand: [
+            ],
+            news: [],
+        },
+        methods: {
+            // 这里面是用来存放函数,这里面的函数会自动成为vue实例的方法
+            getUsername() {
+                let that = this;
+                axios({
+                    method: 'post',
+                    url: "{:url('index/api/getUsername')}",
+                })
+                    .then(function (response) {
+                        if (response['data']['code'] != 0) {
+                            that.$notify.error({
+                                title: '登录失败',
+                                message: response['data']['msg'],
+                                onClose: function () {
+                                    window.location.href = "{:url('index/login/index')}";
+                                }
+                            });
+                        } else {
+                            // alert(JSON.stringify(['data']));
+                            that.username = response['data']['username'];
+                        }
+
+                    }
+                    )
+                    .catch(function (error) { // 请求失败处理
+                        console.log(error);
+                    });
+
+            },
+            getRecommand() {
+                let that = this;
+                axios({
+                    method: 'post',
+                    url: "{:url('index/api/getRecommand')}",
+                })
+                    .then(function (response) {
+                        if (response['data']['code'] != 0) {
+                            that.$notify.error({
+                                title: '商品错误',
+                                message: '获取商品信息失败，请刷新！',
+                            });
+                        } else {
+                            // alert(JSON.stringify(['data']));
+                            that.recommand = response['data']['data'];
+                        }
+
+                    }
+                    )
+                    .catch(function (error) { // 请求失败处理
+                        console.log(error);
+                    });
+            },
+            getNews() {
+                let that = this;
+                axios({
+                    method: 'post',
+                    url: "{:url('index/api/getNews')}",
+                })
+                    .then(function (response) {
+                        if (response['data']['code'] != 0) {
+                            that.$notify.error({
+                                title: '商品错误',
+                                message: '获取商品信息失败，请刷新！',
+                            });
+                        } else {
+                            // alert(JSON.stringify(['data']));
+                            that.news = response['data']['data'];
+                        }
+
+                    }
+                    )
+                    .catch(function (error) { // 请求失败处理
+                        console.log(error);
+                    });
+
+            }
+        },
+        created: function () {
+            this.getNews();
+            this.getUsername();
+            this.getRecommand();
+        }
+    })
+</script>
+{/block}

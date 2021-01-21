@@ -1,0 +1,121 @@
+{extend name="layout_pop" /}
+{block name="topper"}
+<script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+{/block}
+
+{block name="content"}
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+    <legend>商品信息</legend>
+</fieldset>
+<div style="margin-top:0px; width:350px;">
+    <form class="layui-form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">商品名称</label>
+            <div class="layui-input-inline">
+                <input type="text" name="name" placeholder="请输入商品名称" autocomplete="off" class="layui-input"
+                lay-verify="required">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">简介</label>
+            <div class="layui-input-inline">
+                <textarea name="description" placeholder="请输入内容" class="layui-textarea"
+                    ></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">商品数量</label>
+            <div class="layui-input-inline">
+                <input lay-verify="required|number" placeholder="请输入商品数量" type="text" name="amount" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">已售数量</label>
+            <div class="layui-input-inline">
+                <input lay-verify="required|number" placeholder="请输入已售数量" type="text" name="sold"  autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">价格</label>
+            <div class="layui-input-inline">
+                <input lay-verify="required|number" placeholder="请输入价格" type="text" name="price"  autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">起售时间</label>
+            <div class="layui-input-inline">
+                <input lay-verify="required" placeholder="请选择起售时间" type="text" name="start_time" class="layui-input" id="test5" placeholder="yyyy-MM-dd HH:mm:ss">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">状态</label>
+            <div class="layui-input-block">
+                <input type="radio" name="state" value="1" title="可用" >
+                <input type="radio" name="state" value="2" title="不可用" checked>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <div style=" width:200px;">
+                    <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{/block}
+{block name="bottom"}
+<script>
+    $(".layui-upload-list  img").one("error", function (e) {
+        $(this).attr("src", "__STATIC__/images/default.jpg");
+    });
+
+    layui.use(['form', 'layedit', 'laydate', 'upload', 'element'], function () {
+        var form = layui.form
+            , layer = layui.layer
+            , layedit = layui.layedit
+            , laydate = layui.laydate
+            , upload = layui.upload
+            , element = layui.element;
+
+        laydate.render({
+            elem: '#test5'
+            , type: 'datetime'
+            , value: new Date()
+        });
+
+        //监听提交
+        form.on('submit(demo1)', function (data) {
+            $.ajax({
+                type: "POST",
+                data: data.field,
+                url: "{:url('admin/shop/addShop')}",
+                success: function (result) {
+                    if (result) {
+                        layer.msg('修改成功！',
+                            {
+                                icon: 1,
+                                time: 1500,
+                                end: function () {
+                                    xadmin.close();
+                                    xadmin.father_reload();
+                                }
+                            })
+                    } else {
+                        layer.msg('修改失败！',
+                            {
+                                icon: 2,
+                                time: 1500,
+                                anim: 6,
+                            })
+                    }
+                }
+            });
+
+            return false;
+        });
+
+    });
+</script>
+{/block}

@@ -1,0 +1,175 @@
+{extend name="layout_pop" /}
+{block name="topper"}
+<script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+{/block}
+
+{block name="content"}
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+    <legend>商品信息</legend>
+</fieldset>
+<div style="margin-top:0px; width:350px;">
+    <form class="layui-form" action="">
+        <input type="hidden" id="pid" name="id" value="{$result['id']}" />
+        <div class="layui-form-item">
+            <label class="layui-form-label">商品名称</label>
+            <div class="layui-input-inline">
+                <input type="text" name="name" value="{$result['name']}" autocomplete="off" class="layui-input"
+                lay-verify="required">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">简介</label>
+            <div class="layui-input-inline">
+                <textarea name="description" placeholder="请输入内容" class="layui-textarea"
+                    value="{$result['description']}"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">商品数量</label>
+            <div class="layui-input-inline">
+                <input lay-verify="required|number" type="text" name="amount" value="{$result['amount']}" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">已售数量</label>
+            <div class="layui-input-inline">
+                <input lay-verify="required|number" type="text" name="sold" value="{$result['sold']}" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">价格</label>
+            <div class="layui-input-inline">
+                <input lay-verify="required|number" type="text" name="price" value="{$result['price']}" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">起售时间</label>
+            <div class="layui-input-inline">
+                <input lay-verify="required" type="text" name="start_time" class="layui-input" id="test5" placeholder="yyyy-MM-dd HH:mm:ss">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">状态</label>
+            <div class="layui-input-block">
+                <input type="radio" name="state" value="1" title="可用" {$result['checked1']}>
+                <input type="radio" name="state" value="2" title="不可用" {$result['checked2']}>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">推荐</label>
+            <div class="layui-input-block">
+                <input type="radio" name="recommand" value="1" title="推荐" {$result['recommand1']}>
+                <input type="radio" name="recommand" value="2" title="未推荐" {$result['recommand2']}>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <div style=" width:200px;">
+                    <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+    <legend>商品图片上传</legend>
+</fieldset>
+<label class="layui-form-label">图片预览</label>
+<div class="layui-upload" style="width: 400px; margin-left: 60px;">
+    <div class="layui-upload-list" style="width: 350px; margin: auto 50px; margin-bottom: 30px;">
+        <img alt="商品图片" src="http://img.foolbit.xyz/{$result['image']}" class="layui-upload-img"
+            style="width:215px; height:215px; border: solid 1px #000; object-fit:cover;" id="preview">
+        <p id="demoText"></p>
+    </div>
+    <div class="layui-progress layui-progress-big" lay-showPercent="yes" lay-filter="progressBar"
+        style="margin-left:30px; margin-bottom:30px; width: 250px;">
+        <div class="layui-progress-bar layui-bg-green" lay-percent="0%"></div>
+    </div>
+    <div style="margin: 20px 50px;">
+        <button type="button" class="layui-btn" id="test1">选择图片</button>
+        <button type="button" class="layui-btn" id="test9" style="margin-left: 30px;">开始上传</button>
+    </div>
+</div>
+{/block}
+{block name="bottom"}
+<script>
+    $(".layui-upload-list  img").one("error", function (e) {
+        $(this).attr("src", "__STATIC__/images/default.jpg");
+    });
+
+    layui.use(['form', 'layedit', 'laydate', 'upload', 'element'], function () {
+        var form = layui.form
+            , layer = layui.layer
+            , layedit = layui.layedit
+            , laydate = layui.laydate
+            , upload = layui.upload
+            , element = layui.element;
+
+        laydate.render({
+            elem: '#test5'
+            , type: 'datetime'
+            , value: new Date()
+        });
+
+        //普通图片上传
+        var uploadInst = upload.render({
+            elem: '#test1'
+            , url: "{:url('admin/upload/upload')}" //改成您自己的上传接口
+            , bindAction: '#test9'
+            , auto: false
+            , accept: "images"
+            , acceptMime: 'image/jpg, image/png'
+            , data: {'id': {$result['id']}}
+            , choose: function (obj) {
+                //预读本地文件示例，不支持ie8
+                element.progress('progressBar', '0%');
+                obj.preview(function (index, file, result) {
+                    $('#preview').attr('src', result);
+                });
+            }
+            , done: function (res) {
+                layer.msg(JSON.stringify(res));
+                
+                //上传成功
+            }
+            , progress: function (percent, e) {
+                console.log("进度：" + percent + '%');
+                element.progress('progressBar', percent + '%');
+            }
+        });
+
+        //监听提交
+        form.on('submit(demo1)', function (data) {
+            $.ajax({
+                type: "POST",
+                data: data.field,
+                url: "{:url('admin/shop/updateShopInfo')}",
+                success: function (result) {
+                    if (result) {
+                        layer.msg('修改成功！',
+                            {
+                                icon: 1,
+                                time: 1500,
+                                end: function () {
+                                    xadmin.close();
+                                    xadmin.father_reload();
+                                }
+                            })
+                    } else {
+                        layer.msg('修改失败！',
+                            {
+                                icon: 2,
+                                time: 1500,
+                                anim: 6,
+                            })
+                    }
+                }
+            });
+
+            return false;
+        });
+
+    });
+</script>
+{/block}

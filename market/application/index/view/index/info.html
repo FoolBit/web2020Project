@@ -1,0 +1,157 @@
+{extend name="layout" /}
+{block name="topper"}
+<link rel="stylesheet" type="text/css" href="__STATIC__/css/main/style.css">
+{/block}
+{block name="content"}
+<div class="main-content">
+    <div class="main-container">
+        <template>
+            <el-table :data="tableData" style="width: 100%">
+                <el-table-column prop="id" label="订单编号" width="180">
+                </el-table-column>
+                <el-table-column prop="name" label="商品名" width="180">
+                </el-table-column>
+                <el-table-column prop="state" label="状态">
+                </el-table-column>
+            </el-table>
+        </template>
+    </div>
+    <!-- <div style="clear:both;"></div> -->
+</div>Î
+{/block}
+{block name="bottom"}
+<script>
+    // new Vue({
+    //     el: '#app',
+    //     data: {
+    //         username: "",
+    //         recommand: [
+    //         ],
+    //         news: [],
+    //     },
+    //     methods: {
+    //         // 这里面是用来存放函数,这里面的函数会自动成为vue实例的方法
+    //         getUsername() {
+    //             let that = this;
+    //             axios({
+    //                 method: 'post',
+    //                 url: "{:url('index/api/getUsername')}",
+    //             })
+    //                 .then(function (response) {
+    //                     if (response['data']['code'] != 0) {
+    //                         that.$notify.error({
+    //                             title: '登录失败',
+    //                             message: response['data']['msg'],
+    //                             onClose: function () {
+    //                                 window.location.href = "{:url('index/login/index')}";
+    //                             }
+    //                         });
+    //                     } else {
+    //                         // alert(JSON.stringify(['data']));
+    //                         that.username = response['data']['username'];
+    //                     }
+
+    //                 }
+    //                 )
+    //                 .catch(function (error) { // 请求失败处理
+    //                     console.log(error);
+    //                 });
+
+    //         },
+    //         getRecommand() {
+    //             let that = this;
+    //             axios({
+    //                 method: 'post',
+    //                 url: "{:url('index/api/getRecommand')}",
+    //             })
+    //                 .then(function (response) {
+    //                     if (response['data']['code'] != 0) {
+    //                         that.$notify.error({
+    //                             title: '商品错误',
+    //                             message: '获取商品信息失败，请刷新！',
+    //                         });
+    //                     } else {
+    //                         // alert(JSON.stringify(['data']));
+    //                         that.recommand = response['data']['data'];
+    //                     }
+
+    //                 }
+    //                 )
+    //                 .catch(function (error) { // 请求失败处理
+    //                     console.log(error);
+    //                 });
+    //         },
+    //         getNews() {
+    //             let that = this;
+    //             axios({
+    //                 method: 'post',
+    //                 url: "{:url('index/api/getRecommand')}",
+    //             })
+    //                 .then(function (response) {
+    //                     if (response['data']['code'] != 0) {
+    //                         that.$notify.error({
+    //                             title: '商品错误',
+    //                             message: '获取商品信息失败，请刷新！',
+    //                         });
+    //                     } else {
+    //                         // alert(JSON.stringify(['data']));
+    //                         that.news = response['data']['data'];
+    //                     }
+
+    //                 }
+    //                 )
+    //                 .catch(function (error) { // 请求失败处理
+    //                     console.log(error);
+    //                 });
+
+    //         }
+    //     },
+    //     created: function () {
+    //         this.getNews();
+    //         this.getUsername();
+    //         this.getRecommand();
+    //     }
+    // })
+
+    var Main = {
+        data() {
+            return {
+                tableData: [
+
+                ]
+            }
+        },
+        methods: {
+            getOrder() {
+                let that = this;
+                axios({
+                    method: 'post',
+                    url: "{:url('index/api/getOrder')}",
+                })
+                    .then(function (response) {
+                        if (response['data']['code'] != 0) {
+                            that.$notify.error({
+                                title: '查询失败！',
+                                message: response['data']['msg']
+                            });
+                        } else {
+                            // alert(JSON.stringify(['data']));
+                            that.tableData = response['data']['data'];
+                        }
+
+                    }
+                    )
+                    .catch(function (error) { // 请求失败处理
+                        console.log(error);
+                    });
+
+            },
+        },
+        mounted: function(){
+            this.getOrder();
+        }
+    }
+    var Ctor = Vue.extend(Main)
+    new Ctor().$mount('#app')
+</script>
+{/block}

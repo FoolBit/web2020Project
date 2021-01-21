@@ -1,0 +1,143 @@
+{extend name="layout" /}
+{block name="content"}
+
+<div class="layui-card-header">
+    <button class="layui-btn" onclick="xadmin.open('添加用户','{:url("admin/shop/shop_add")}',600,500)">
+        <i class="layui-icon"></i>
+        添加
+    </button>
+</div>
+<table class="layui-hide" id="LAY_table_user" lay-filter="user"></table>
+
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script type="text/html" id="sellBar">
+    <a class="layui-btn layui-btn-xs" lay-event="up">上架</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="down">下架</a>
+</script>
+
+{/block}
+{block name="bottom"}
+<script>
+    layui.use('table', function () {
+        var table = layui.table;
+
+        table.render({
+            elem: '#LAY_table_user'
+            , url: "{:url('admin/api/getShopInfo')}" //数据接口
+            , page: true //开启分页
+            , cols: [[ //表头
+                { field: 'id', title: 'ID', width: 80, sort: true, fixed: true, align: 'center' }
+                , { field: 'name', title: '商品名称', align: 'center', sort: true }
+                , { field: 'description', title: '简介', align: 'center' }
+                , { field: 'amount', title: '总量', align: 'center', width: 80 }
+                , { field: 'sold', title: '已售', align: 'center', width: 80 }
+                , { field: 'price', title: '价格', align: 'center', width: 100 }
+                , { field: 'start_time', title: '开始抢购时间', align: 'center', width: 150 }
+                , { field: 'state', title: '状态', align: 'center' }
+                , { field: 'recommand', title: '推荐', align: 'center' }
+                , { fixed: 'right', title: '操作', toolbar: '#barDemo', align: 'center', width: 150 }
+                , { fixed: 'right', title: '抢购管理', toolbar: '#sellBar', align: 'center', width: 150 }
+            ]]
+            , id: 'testReload'
+        });
+
+
+        $('.demoTable .layui-btn').on('click', function () {
+            var type = $(this).data('type');
+            active[type] ? active[type].call(this) : '';
+        });
+
+        //监听行工具事件
+        table.on('tool(user)', function (obj) {
+            var data = obj.data;
+            if (obj.event === 'del') {
+                layer.confirm('是否确定删除？', function (index) {
+                    var fdata = data.field;
+                    $.post({
+                        url: "{:url('admin/shop/delShop')}",//提交数据接口
+                        data: {
+                            id: data.id
+                        },
+                        success: function (flag) {
+                            if (flag) {
+                                layer.msg('删除成功!', {
+                                    time: 1500,
+                                    icon: 1,
+                                    end: function () {
+                                        // obj.del();
+                                        // layer.close(index);
+                                        window.location.reload();
+                                    }
+                                });
+                            } else {
+                                layer.msg("修改失败！", {
+                                    time: 1500,
+                                    icon: 2
+                                });
+                            }
+                        }
+                    });
+                });
+            } else if (obj.event === 'edit') {
+                var url = "{:url('admin/shop/shop_edit')}" + '?id=' + data.id;
+                xadmin.open('编辑', url, 400, 600);
+
+            } else if (obj.event === 'up') {
+                $.post({
+                    url: "{:url('admin/shop/upload')}",//提交数据接口
+                    data: {
+                        id: data.id
+                    },
+                    success: function (flag) {
+                        if (flag) {
+                            layer.msg('上架成功!', {
+                                time: 1500,
+                                icon: 1,
+                                end: function () {
+                                    // obj.del();
+                                    // layer.close(index);
+                                    window.location.reload();
+                                }
+                            });
+                        } else {
+                            layer.msg("上架失败！", {
+                                time: 1500,
+                                icon: 2
+                            });
+                        }
+                    }
+                });
+            } else if (obj.event === 'down') {
+                $.post({
+                    url: "{:url('admin/shop/download')}",//提交数据接口
+                    data: {
+                        id: data.id
+                    },
+                    success: function (flag) {
+                        if (flag) {
+                            layer.msg('下架成功!', {
+                                time: 1500,
+                                icon: 1,
+                                end: function () {
+                                    // obj.del();
+                                    // layer.close(index);
+                                    window.location.reload();
+                                }
+                            });
+                        } else {
+                            layer.msg("下架失败", {
+                                time: 1500,
+                                icon: 2
+                            });
+                        }
+                    }
+                });
+            }
+        });
+    });
+
+</script>
+{/block}

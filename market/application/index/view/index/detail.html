@@ -1,0 +1,247 @@
+{extend name="layout"/}
+{block name="topper"}
+<link rel="stylesheet" type="text/css" href="__STATIC__/css/detail/style.css">
+{/block}
+
+{block name="content"}
+<div class="detail-box">
+    <el-row>
+        <el-col :span="8">
+            <div class="grid-content">
+                <div class="img-box">
+                    <el-image :src="good.image" fit="cover" class="good-img">
+                    </el-image>
+                </div>
+
+            </div>
+        </el-col>
+        <el-col :span="16">
+            <div class="grid-content" style="padding: 0px 20px;">
+                <div class="good-name">
+                    <span> {{good.name}}</span>
+                </div>
+                <div class="good-price">
+                    惊爆价：￥{{good.price}}
+                    <div style="color:darkgray; font-size:10px;">
+                        总量：{{good.amount}}
+                    </div>
+                </div>
+                <div class="timer-box">
+                    <div class="title">
+                        <i class="el-icon-time"></i>
+                        <span>抢购倒计时</span>
+                    </div>
+                    <div class="timer">
+                        <span>
+                            {{time}}
+                        </span>
+                    </div>
+                </div>
+                <div class="buy-box">
+                    <span style="float: left;
+                                margin-right: 5px;
+                                width: 55px;
+                                color: #6C6C6C;">数量：</span>
+                    <el-input-number v-model="num" :min="1" :max="good.amount" label="描述文字"></el-input-number>
+                    <el-button type="primary" @click="secKill" class="button" round :disabled="link==''">开始抢购</el-button>
+                </div>
+            </div>
+        </el-col>
+    </el-row>
+</div>
+<div class="description-box">
+    <div class="title">
+        <span>简介</span>
+    </div>
+    <div class="content">
+        <span>
+            {{good.description}}
+        </span>
+    </div>
+</div>
+{/block}
+
+{block name="bottom"}
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            num: 1,
+            username: "",
+            good: [
+            ],
+            time: '',
+            link: '',
+        },
+        methods: {
+            // 这里面是用来存放函数,这里面的函数会自动成为vue实例的方法
+            getUsername() {
+                let that = this;
+                axios({
+                    method: 'post',
+                    url: "{:url('index/api/getUsername')}",
+                })
+                    .then(function (response) {
+                        if (response['data']['code'] != 0) {
+                            that.$notify.error({
+                                title: '登录失败',
+                                message: response['data']['msg'],
+                                onClose: function () {
+                                    window.location.href = "{:url('index/login/index')}";
+                                }
+                            });
+                        } else {
+                            // alert(JSON.stringify(['data']));
+                            that.username = response['data']['username'];
+                        }
+
+                    }
+                    )
+                    .catch(function (error) { // 请求失败处理
+                        console.log(error);
+                    });
+
+            },
+            getGoods() {
+                let that = this;
+                axios({
+                    method: 'post',
+                    url: "{:url('index/api/getGood')}",
+                    data: {
+                        id: {$id},
+                    }
+                })
+                    .then(function (response) {
+                        if (response['data']['code'] != 0) {
+                            that.$notify.error({
+                                title: '商品错误',
+                                message: '获取商品信息失败，请刷新！',
+                            });
+                            // that.timer();
+                        } else {
+                            // alert(JSON.stringify(['data']));
+                            that.good = response['data']['data'];
+                        }
+
+                    }
+                    )
+                    .catch(function (error) { // 请求失败处理
+                        console.log(error);
+                    });
+            },
+            myTimer() {
+                let that = this;
+                that.timer = setInterval(function () {
+                    if (that.lefttime <= 0) {
+                        clearInterval(that.timer);
+                        that.time = '00:00:00:00';
+                        that.getLink();
+                        return;
+                    }
+                    d = Math.floor(that.lefttime / 1000 / 60 / 60 / 24);
+                    this.h = Math.floor(that.lefttime / 1000 / 60 / 60 % 24);
+                    this.m = Math.floor(that.lefttime / 1000 / 60 % 60);
+                    this.s = Math.floor(that.lefttime / 1000 % 60);
+                    this.ms = Math.floor(that.lefttime / 10 % 100);
+                    that.lefttime = that.lefttime - 10;
+                    //递归每秒调用countTime方法，显示动态时间效果
+                    if (this.h < 10) this.h = '0' + this.h;
+                    if (this.m < 10) this.m = '0' + this.m;
+                    if (this.s < 10) this.s = '0' + this.s;
+                    if (this.ms < 10) this.ms = '0' + this.ms;
+                    that.time = d + ':' + this.h + ':' + this.m + ':' + this.s + ':' + this.ms;
+                }, 10)
+            },
+            getLink() {
+                let that = this;
+                axios({
+                    method: 'post',
+                    url: "{:url('index/api/getLink')}",
+                    data: {
+                        id: {$id}
+                    }
+                })
+                    .then(function (response) {
+                        if (response['data']['code'] != 0) {
+                            that.lefttime = response['data']['data']*1000;
+                            that.myTimer();
+                        } else {
+                            that.link = response['data']['data'];
+                        }
+                    }
+                    )
+                    .catch(function (error) { // 请求失败处理
+                        console.log(error);
+                    });
+            },
+            getRestTime() {
+                let that = this;
+                axios({
+                    method: 'post',
+                    url: "{:url('index/api/getRestTime')}",
+                    data: {
+                        id: {$id}
+                    }
+                })
+                    .then(function (response) {
+                        if (response['data']['code'] != 0) {
+                            that.$notify.error({
+                                title: '获取数据失败',
+                                message: response['data']['msg'],
+                            });
+                        } else {
+                            // alert(JSON.stringify(response['data']['data']));
+                            that.lefttime = response['data']['data']*1000;
+
+                            // alert(that.lefttime);
+                            that.myTimer();
+                        }
+
+                    }
+                    )
+                    .catch(function (error) { // 请求失败处理
+                        console.log(error);
+                    });
+
+            },
+            secKill(){
+                let that = this;
+                axios({
+                    method: 'post',
+                    url: "{:url('index/api/secKill')}",
+                    data: {
+                        link: that.link,
+                        num: that.num
+                    }
+                })
+                    .then(function (response) {
+                        if (response['data']['code'] != 0) {
+                            that.$notify.error({
+                                title: '抢购失败！',
+                                message: response['data']['msg'],
+                            });
+                        } else {
+                            that.$notify.success({
+                                title: '抢购成功！',
+                                message: '请稍后查看订单状态信息',
+                            });
+                        }
+
+                    }
+                    )
+                    .catch(function (error) { // 请求失败处理
+                        console.log(error);
+                    });
+            }
+        
+        },
+        created: function () {
+            this.getUsername();
+            this.getGoods();
+            this.getRestTime();
+        }
+    })
+
+
+</script>
+{/block}

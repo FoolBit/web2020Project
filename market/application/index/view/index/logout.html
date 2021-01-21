@@ -1,0 +1,33 @@
+{extend name="layout" /}
+{block name="topper"}
+<link rel="stylesheet" type="text/css" href="__STATIC__/css/main/style.css">
+{/block}
+{block name="bottom"}
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            username: "",
+            recommand: [
+            ],
+            news: [],
+        },
+        methods: {
+            logout() {
+                localStorage.removeItem('token');
+                this.$notify.success({
+                    title: '退出成功',
+                    duration: 1000,
+                    onClose: function () {
+                        window.location.href = "{:url('index/login/index')}";
+                    }
+                }); 
+            }
+
+        },
+        mounted: function () {
+            this.logout();
+        }
+    })
+</script>
+{/block}

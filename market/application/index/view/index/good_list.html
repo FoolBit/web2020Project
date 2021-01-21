@@ -1,0 +1,113 @@
+{extend name="layout" /}
+{block name="topper"}
+<link rel="stylesheet" type="text/css" href="__STATIC__/css/goods/style.css">
+{/block}
+{block name="content"}
+<div class="good-list">
+    <div v-for="good in goods" class="good-card">
+        <el-row>
+            <el-col :span="8">
+                <div class="grid-content">
+                    <div class="img-wrapper">
+                        <el-image :src="good.image" fit="cover" class="good-img">
+                        </el-image>
+                    </div>
+                </div>
+            </el-col>
+            <el-col :span="16">
+                <div class="grid-content">
+                    <div class="good-name">
+                        <span>{{good.name}}</span>
+                    </div>
+                    <div class="good-description">
+                        <div>
+                            {{good.description}}
+                        </div>
+                    </div>
+                    <div class="good-info">
+                        <div class="good-link">
+                            <el-link class="good-price" :href="good.url" :underline="false" target="_blank">
+                                <div>￥{{good.price}}</div>
+                            </el-link>
+                            <el-link class="good-link-button" :href="good.url" :underline="false" target="_blank">
+                                <div>立即抢购</div>
+                            </el-link>
+                        </div>
+                    </div>
+
+                </div>
+            </el-col>
+
+        </el-row>
+    </div>
+
+</div>
+{/block}
+{block name="bottom"}
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            username: "",
+            goods: [
+            ],
+        },
+        methods: {
+            // 这里面是用来存放函数,这里面的函数会自动成为vue实例的方法
+            getUsername() {
+                let that = this;
+                axios({
+                    method: 'post',
+                    url: "{:url('index/api/getUsername')}",
+                })
+                    .then(function (response) {
+                        if (response['data']['code'] != 0) {
+                            that.$notify.error({
+                                title: '登录失败',
+                                message: response['data']['msg'],
+                                onClose: function () {
+                                    window.location.href = "{:url('index/login/index')}";
+                                }
+                            });
+                        } else {
+                            // alert(JSON.stringify(['data']));
+                            that.username = response['data']['username'];
+                        }
+
+                    }
+                    )
+                    .catch(function (error) { // 请求失败处理
+                        console.log(error);
+                    });
+
+            },
+            getGoods() {
+                let that = this;
+                axios({
+                    method: 'post',
+                    url: "{:url('index/api/getGoods')}",
+                })
+                    .then(function (response) {
+                        if (response['data']['code'] != 0) {
+                            that.$notify.error({
+                                title: '商品错误',
+                                message: '获取商品信息失败，请刷新！',
+                            });
+                        } else {
+                            // alert(JSON.stringify(['data']));
+                            that.goods = response['data']['data'];
+                        }
+
+                    }
+                    )
+                    .catch(function (error) { // 请求失败处理
+                        console.log(error);
+                    });
+            },},
+        created: function () {
+            this.getUsername();
+            this.getGoods();  
+        }
+    })
+</script>
+{/block}

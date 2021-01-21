@@ -1,0 +1,103 @@
+{extend name="layout_pop" /}
+{block name="content"}
+<div style="margin-top:50px; width:500px;">
+    <form class="layui-form" action="">
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-block">
+                <input type="text" name="username" placeholder="请输入用户名" lay-verify="required" autocomplete="off"
+                    class="layui-input"  readonly value="{$result['username']}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label for="password" class="layui-form-label">
+                <span style="color: red;">*</span>密码</label>
+            <div class="layui-input-inline">
+                <input type="password" name="password" placeholder="请输入密码" required lay-verify="required|pass"
+                    autocomplete="off" class="layui-input" onpaste="return false" oncontextmenu="return false"
+                    oncopy="return false" oncut="return false">
+            </div>
+            <div class="layui-form-mid layui-word-aux">6到16个字符</div>
+        </div>
+        <div class="layui-form-item">
+            <label for="repassword" class="layui-form-label">
+                <span style="color: red;">*</span>确认密码</label>
+            <div class="layui-input-inline">
+                <input type="password" name="repassword" placeholder="请再次输入密码" required lay-verify="required|pass"
+                    autocomplete="off" class="layui-input" onpaste="return false" oncontextmenu="return false"
+                    oncopy="return false" oncut="return false">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <div style="margin: auto; width:200px;">
+                    <button type="submit" class="layui-btn" lay-submit="" lay-filter="demo1">立即提交</button>
+                    <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+{/block}
+{block name="bottom"}
+<script>
+    layui.use(['form', 'layedit', 'laydate'], function () {
+        var form = layui.form
+            , layer = layui.layer
+            , layedit = layui.layedit
+            , laydate = layui.laydate;
+
+
+        //监听提交
+        form.on('submit(demo1)', function (fdata) {
+            let data = fdata.field;
+            if (data.password != data.repassword) {
+                layer.msg("两次输入密码不同!",
+                    {
+                        icon: 2,
+                        anim: 6,
+                    });
+                return false;
+            }
+            if(data.password.length>16 || data.password.length<6)
+            {
+                layer.msg("密码长度不符合！",
+                    {
+                        icon: 2,
+                        anim: 6,
+                    });
+                return false;
+            }
+
+            $.ajax({
+                type: "POST",
+                data: data,
+                url: "{:url('admin/user/updatePassword')}",
+                success: function (result) {
+                    if (result) {
+                        layer.msg('修改成功！',
+                            {
+                                icon: 1,
+                                time: 1500,
+                                end: function () {
+                                    xadmin.close();
+                                    xadmin.father_reload();
+                                }
+                            })
+                    } else {
+                        layer.msg('修改失败! ',
+                            {
+                                icon: 2,
+                                time: 1500,
+                                anim: 6,
+                            })
+                    }
+                }
+            });
+
+            return false;
+        });
+
+    });
+</script>
+{/block}
