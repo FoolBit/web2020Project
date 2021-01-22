@@ -37,7 +37,10 @@
    chmod -R 777 runtime
    ```
 
-   
+
+3. `PHP`安装相应的`mysql`和`Redis`模块扩展
+
+
 
 ### 配置
 
@@ -99,10 +102,10 @@
 
 3. 添加`go`的`RabbitMQ`和`MySQL`依赖
 
-```shell
-go get github.com/streadway/amqp
-go get -u github.com/jinzhu/gorm
-```
+   ```shell
+   go get github.com/streadway/amqp
+   go get -u github.com/jinzhu/gorm
+   ```
 
 4. 在生产/消费订单的服务器上分别运行`send.go`和`receive.go`
 
